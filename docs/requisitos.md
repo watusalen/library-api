@@ -263,7 +263,7 @@ Este documento descreve os requisitos funcionais, não funcionais, os casos de u
 
 - **Ator principal:** Cliente ou Administrador
 - **Pré-condições:** Usuário autenticado
-- **Pós-condições:** Lista de autores ou categorias retornada
+- **Pós-condições:** Lista de autores ou categorias a ser retornada
 - **Requisitos relacionados:** RF13, RF17; RNF09, RNF12, RNF18
 - **Fluxo principal:**
   1. O usuário solicita a listagem de autores ou de categorias
