@@ -178,15 +178,15 @@ public class DataSeeder implements CommandLineRunner {
             String lastName = LAST_NAMES[(i - 1) % LAST_NAMES.length];
             String fullName = firstName + " " + lastName;
             String email = (firstName + "." + lastName + i).toLowerCase() + "@gmail.com";
-            Role role = i <= ADMIN_COUNT ? Role.ADMIN : Role.CLIENT;
+            Role role = Role.CLIENT;
 
             users.add(new User(null, fullName, email, hashedPassword, role));
         }
 
         userRepository.saveAll(users);
 
-        log.info("Seeded {} users ({} ADMIN, {} CLIENT). Shared password for login: {}",
-                TOTAL_USERS, ADMIN_COUNT, TOTAL_USERS - ADMIN_COUNT, SEED_PASSWORD);
+        log.info("Seeded {} users (ALL CLIENT). Shared password for login: {}",
+                TOTAL_USERS, SEED_PASSWORD);
     }
 
     private void seedAuthors() {
