@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
  * um banco já semeado.
  */
 @Configuration
-@Profile("!prod")
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
@@ -166,7 +165,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedUsers() {
-        if (userRepository.count() > 0) {
+        if (userRepository.count() > 5) {
             return;
         }
 
