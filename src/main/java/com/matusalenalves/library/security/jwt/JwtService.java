@@ -10,6 +10,10 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Geração e validação de tokens JWT (RNF04): emite o token no login e o
  * valida a cada requisição autenticada, sem exigir estado de sessão no
@@ -26,7 +30,15 @@ public class JwtService {
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration-seconds}") long expirationSeconds
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            try {
+                keyBytes = MessageDigest.getInstance("SHA-256").digest(keyBytes);
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException("SHA-256 algorithm not available", e);
+            }
+        }
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.expirationSeconds = expirationSeconds;
     }
 
