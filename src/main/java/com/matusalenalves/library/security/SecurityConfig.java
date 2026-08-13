@@ -17,6 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Configuração central do Spring Security (RNF04, RNF06): habilita
@@ -87,6 +92,31 @@ public class SecurityConfig {
     }
 
     /**
+     * Libera as chamadas do front-end (origem diferente da API) e permite
+     * que o Spring Security responda ao preflight {@code OPTIONS} sem exigir
+     * autenticação, condição necessária para qualquer requisição de
+     * navegador funcionar.
+     *
+     * @return a configuração de CORS usada pela {@link #securityFilterChain(HttpSecurity)}.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174"
+                // adicionar aqui a URL do front publicado, quando existir
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    /**
      * Define a cadeia de filtros de segurança: desativa CSRF (irrelevante
      * para uma API stateless autenticada por token), remove sessão HTTP
      * (RNF04), autoriza cada grupo de endpoints conforme o perfil exigido
@@ -100,6 +130,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling -> exceptionHandling
